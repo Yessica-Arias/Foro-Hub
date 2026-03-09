@@ -13,12 +13,12 @@ Funciones:
 - Los usuarios se autentican usando login y clave
 - Se genera un token que debe enviarse en el header para las soliciitudes protegidas
 2. Gestiona topicos
-- Crea topicos POST
-- Lista los topicos GET
-- lista con paginacion GET
-- consulta un topico por ID GET
-- Actualiza un topico PUT
-- Elimina un topico DELETE
+- Crea topicos POST /topicos
+- Lista los topicos GET /topicos
+- lista con paginacion GET /topicos?page=0&size=10
+- consulta un topico por ID GET /topicos/{id}
+- Actualiza un topico PUT /topicos/{id}
+- Elimina un topico DELETE /topicos/{id}
 
 Para Usar:
 
