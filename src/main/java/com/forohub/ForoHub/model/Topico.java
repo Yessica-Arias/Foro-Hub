@@ -16,28 +16,29 @@ public class Topico {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank
+    @NotBlank(message = "El título no puede estar vacío")
     private String titulo;
 
-    @NotBlank
+    @NotBlank(message = "El mensaje no puede estar vacío")
     @Column(columnDefinition = "TEXT")
     private String mensaje;
 
+    @Column(name = "fecha_creacion")
     private LocalDateTime fechaCreacion = LocalDateTime.now();
 
-    @NotBlank
-    private String estatus ="ABIERTO";
+    @NotBlank(message = "El estatus no puede estar vacío")
+    private String estatus = "ABIERTO";
 
-    @NotBlank
+
+    @NotBlank(message = "El autor no puede estar vacío")
     private String autor;
 
-    @NotBlank
+    @NotBlank(message = "El curso no puede estar vacío")
     private String curso;
 
-    public Topico(){}
+    public Topico() {}
 
     public Topico(String titulo, String mensaje, String autor, String curso) {
-
         this.titulo = titulo;
         this.mensaje = mensaje;
         this.autor = autor;

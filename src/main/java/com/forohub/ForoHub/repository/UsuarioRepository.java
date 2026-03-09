@@ -1,0 +1,11 @@
+package com.forohub.ForoHub.repository;
+
+import com.forohub.ForoHub.model.Usuario;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.util.Optional;
+
+public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
+
+    Optional<Usuario> findByLogin(String login);
+}

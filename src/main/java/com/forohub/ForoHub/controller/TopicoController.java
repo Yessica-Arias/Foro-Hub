@@ -20,28 +20,19 @@ public class TopicoController {
     @Autowired
     private TopicoRepository topicoRepository;
 
-    @PostMapping
-    public ResponseEntity<?> crearTopico(@RequestBody @Valid Topico topico) {
-        if (topicoRepository.existsByTituloAndMensaje(topico.getTitulo(), topico.getMensaje())) {
-            return ResponseEntity.badRequest().body("Error: Ya existe un tópico con el mismo titulo y mensaje");
-        }
-        Topico nuevoTopico = topicoRepository.save(topico);
-        return ResponseEntity.ok(nuevoTopico);
+    @GetMapping
+    public Page<Topico> listarTopicos(@PageableDefault(size = 10, sort = "fechaCreacion") Pageable paginacion) {
+        return topicoRepository.findAll(paginacion);
     }
 
     @GetMapping("/primeros")
-    public List<Topico> listarPimerosTopicos() {
+    public List<Topico> listarPrimerosTopicos() {
         return topicoRepository.findTop10ByOrderByFechaCreacionAsc();
     }
 
     @GetMapping("/curso")
     public List<Topico> buscarPorCurso(@RequestParam String curso) {
         return topicoRepository.findByCurso(curso);
-    }
-
-    @GetMapping
-    public Page<Topico> listar(@PageableDefault(size = 10, sort = "fechaCreacion")Pageable paginacion) {
-        return topicoRepository.findAll(paginacion);
     }
 
     @GetMapping("/{id}")
@@ -51,37 +42,34 @@ public class TopicoController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    @PostMapping
+    public ResponseEntity<Topico> crearTopico(@RequestBody @Valid Topico topico) {
+        Topico nuevoTopico = topicoRepository.save(topico);
+        return ResponseEntity.ok(nuevoTopico);
+    }
+
     @PutMapping("/{id}")
-    public ResponseEntity<?> actualizaTopico(@PathVariable Long id, @RequestBody @Valid Topico datosActualizados) {
-
-        Optional<Topico> topicoOptional = topicoRepository.findById(id);
-        if (topicoOptional.isPresent()) {
-            Topico topico = topicoOptional.get();
-
-            topico.setTitulo(datosActualizados.getTitulo());
-            topico.setMensaje(datosActualizados.getMensaje());
-            topico.setAutor(datosActualizados.getAutor());
-            topico.setCurso(datosActualizados.getCurso());
-            topico.setEstatus(datosActualizados.getEstatus());
-
-            Topico topicoActualizado = topicoRepository.save(topico);
-            return ResponseEntity.ok(topicoActualizado);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+    public ResponseEntity<Topico> actualizarTopico(@PathVariable Long id,
+                                                   @RequestBody @Valid Topico datosActualizados) {
+        return topicoRepository.findById(id)
+                .map(topico -> {
+                    topico.setTitulo(datosActualizados.getTitulo());
+                    topico.setMensaje(datosActualizados.getMensaje());
+                    topico.setAutor(datosActualizados.getAutor());
+                    topico.setCurso(datosActualizados.getCurso());
+                    topico.setEstatus(datosActualizados.getEstatus());
+                    return ResponseEntity.ok(topicoRepository.save(topico));
+                })
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> eliminarTopico(@PathVariable Long id) {
-
-        Optional<Topico> topico = topicoRepository.findById(id);
-
-        if (topico.isPresent()) {
-            topicoRepository.deleteById(id);
-            return ResponseEntity.noContent().build();
-        }
-
-        return ResponseEntity.notFound().build();
+    public ResponseEntity<Void> eliminarTopico(@PathVariable Long id) {
+        return topicoRepository.findById(id)
+                .map(topico -> {
+                    topicoRepository.delete(topico);
+                    return ResponseEntity.noContent().<Void>build();
+                })
+                .orElse(ResponseEntity.notFound().build());
     }
-
 }
